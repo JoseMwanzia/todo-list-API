@@ -9,6 +9,12 @@ class Todo {
             throw new Error("Error querying data from the database", error.message)
         }
     }
+
+    static async getCount() {
+        const count = await pool.query('SELECT COUNT(*) AS TOTAL FROM todo_list;')
+        return count.rows[0].total
+    }
+
 }
 
 module.exports = Todo;
