@@ -1,8 +1,7 @@
 const express = require('express')
 const router = express.Router()
 const todoController = require('../controller/todoController')
-
-router.get('/', todoController.fetchData)
+router.get('/todos', authenticateToken , todoController.fetchData)
 
 module.exports = router;
 
