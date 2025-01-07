@@ -17,3 +17,14 @@ exports.fetchData = async function (req, res) {
     }
 }
 
+exports.createTodos = async (req, res) => {
+    const userId = req.user.id;
+    const { title, description } = req.body;
+    try {
+        const result = await Todo.createTodo(title, description, userId)
+        res.status(200).send(result)
+    } catch (error) {
+        console.error(`Error posting data, ${error.message}`);
+        res.status(500).send(`Error posting data, ${error.message}`)
+    }
+}

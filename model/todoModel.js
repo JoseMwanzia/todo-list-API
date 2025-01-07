@@ -15,6 +15,15 @@ class Todo {
         return count.rows[0].total
     }
 
+    static async createTodo(title, description, userId) {
+        try {
+            const result = await pool.query('INSERT INTO todo_list (title, description, user_id) VALUES ($1, $2, $3) RETURNING *;', [title, description, userId]);
+            return result.rows;
+        } catch (error) {
+            console.error(`Error inserting data; ${error.message}`);
+            throw new Error(error.message)
+        }
+    }
 }
 
 module.exports = Todo;
