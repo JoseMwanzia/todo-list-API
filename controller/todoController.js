@@ -12,7 +12,8 @@ exports.fetchData = async function (req, res) {
       const data = await Todo.all(userId, limit, offset)
       res.status(200).send({data, page, limit, total})
     } catch (error) {
-        console.error('Error executing GET request', error)
+        console.error(`Error executing GET request, ${error.message}`);
+        res.status(500).send(`Error executing GET request, ${error.message}\n`)
     }
 }
 
