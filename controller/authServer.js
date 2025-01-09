@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const redis = require('../config/redisConnect');
 require('dotenv').config()
 const helpers = require('../helpers/helpers')
+const { REFRESH_TOKEN_SECRET } = process.env
 
 // login routes to issues tokens
 async function login(req, res) {
@@ -39,7 +40,7 @@ async function refreshTokens(req, res) {
 
         if (!storedUser) return res.status(403).send('Invalid or expired Token!');
 
-        jwt.verify(token, process.env.REFRESH_TOKEN_SECRET, async (err, user) => {
+        jwt.verify(token, REFRESH_TOKEN_SECRET, async (err, user) => {
             if (err) return res.status(403).send('Token is not valid!');
             const accessToken = await helpers.generateAccessToken(JSON.parse(storedUser))
             res.status(200).send(accessToken)

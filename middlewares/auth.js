@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 const redis = require('../config/redisConnect');
+const { ACCESS_TOKEN_SECRET } = process.env;
 
 async function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -9,11 +10,11 @@ async function authenticateToken(req, res, next) {
 
     try {
         // Check blocklist for revoked tokens
-        const { id, iat } = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+        const { id, iat } = jwt.verify(token, ACCESS_TOKEN_SECRET);
         const isRevoked = await redis.get(`Blocklist:${id}:${iat}`);
         if (isRevoked) return res.status(403).send("Access token has been revoked!");
 
-        jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, data) => {
+        jwt.verify(token, ACCESS_TOKEN_SECRET, (err, data) => {
             if (err) return res.sendStatus(403)
             req.user = data
             next()

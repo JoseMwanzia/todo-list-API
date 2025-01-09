@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const redis = require('../config/redisConnect');
 require('dotenv').config()
+const { ACCESS_TOKEN_SECRET, ACCESS_TOKEN_EXPIRES, REFRESH_TOKEN_SECRET, REFRESH_TOKEN_EXPIRES } = process.env
 
 // retrieve refreshTokens from Redis
 const getCachedRefreshToken = async (key) => {
@@ -12,11 +13,11 @@ const getCachedRefreshToken = async (key) => {
 }
 
 async function generateAccessToken(user) {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRES });
+    return jwt.sign(user, ACCESS_TOKEN_SECRET, { expiresIn: ACCESS_TOKEN_EXPIRES });
 }
 
 async function generateRefreshTokens(user) {
-    const refreshToken = jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRES })
+    const refreshToken = jwt.sign(user, REFRESH_TOKEN_SECRET, { expiresIn: REFRESH_TOKEN_EXPIRES })
     // store token in Redis with an expiry
     const saveToken = await redis.set(refreshToken, JSON.stringify(user), 'EX', 7 * 24 * 60 * 60) // 7 days
     if (!saveToken) return console.error('Refresh Token not Stored in Redis!');
