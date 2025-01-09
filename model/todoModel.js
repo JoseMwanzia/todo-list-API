@@ -10,8 +10,8 @@ class Todo {
         }
     }
 
-    static async getCount() {
-        const count = await pool.query('SELECT COUNT(*) AS TOTAL FROM todo_list;')
+    static async getCount(userId) {
+        const count = await pool.query('SELECT COUNT(*) AS TOTAL FROM todo_list WHERE user_id=$1;', [userId])
         return count.rows[0].total
     }
 
