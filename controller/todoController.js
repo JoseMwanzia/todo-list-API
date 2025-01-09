@@ -1,5 +1,4 @@
 const Todo = require('../model/todoModel')
-const bcrypt = require('bcrypt');
 
 exports.fetchData = async function (req, res) {
     const term = req.query.term
@@ -40,5 +39,20 @@ exports.createTodos = async (req, res) => {
     } catch (error) {
         console.error(`Error posting data, ${error.message}`);
         res.status(500).send(`Error posting data, ${error.message}`)
+    }
+}
+
+exports.updateTodos = async function name(req, res) {
+    // get the required data 
+    const { title, description } = req.body;
+    const {todoId} = req.params;
+    const userId = req.user.id;
+    try {
+        // do a database query for update
+        const result = await Todo.updateTodo(title, description, todoId, userId)
+        res.status(201).send(result)
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).send(`Error updating todo; ${error.message}`)
     }
 }

@@ -24,6 +24,16 @@ class Todo {
             throw new Error(error.message)
         }
     }
+
+    static async updateTodo( title, description, todoId, userId) {
+        try {
+            const result = await pool.query('UPDATE todo_list SET title=$1, description=$2 WHERE id=$3 AND user_id=$4 RETURNING *;', [title, description, todoId, userId])
+            return result.rows
+        } catch (error) {
+            console.log(error);
+            throw new Error(`Error Updating database, ${error.message}`)
+        }
+    }
 }
 
 module.exports = Todo;

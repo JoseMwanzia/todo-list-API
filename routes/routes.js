@@ -13,6 +13,7 @@ router.post('/login', validationMiddleware(userLoginValidationSchema), authServe
 router.post('/refresh', authServer.refreshTokens)
 router.get('/todos', authenticateToken, todoController.fetchData)
 router.post('/todos', validationMiddleware(todoValidationSchema), authenticateToken, todoController.createTodos)
+router.put('/todos/:todoId', validationMiddleware(todoValidationSchema), authenticateToken, todoController.updateTodos)
 router.post('/logout', authenticateToken, authServer.logout)
 
 module.exports = router;
