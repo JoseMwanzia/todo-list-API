@@ -20,23 +20,3 @@ exports.signUpUser = async function(req, res) {
     }
 }
 
-exports.login = async function (req, res) {
-    const {email, password} = req.body;
-    try {
-        // get data from the model
-        const data = await User.getUserByEmail(email);
-        if (data === 404) {
-            return res.sendStatus(data);
-        }
-
-        // verify the hashed password
-        const verifyPassword = await bcrypt.compare(password, data.password)
-
-        // create a JWT token and send it to client after passwordVerified
-        const accessToken = jwt.sign(data, process.env.ACCESS_TOKEN_SECRET);
-        verifyPassword ? res.status(200).send({ token: accessToken }) : res.status(401).send('Wrong password!');
-    } catch (error) {
-        console.log(error);
-        res.status(500).send(`Error Login in; ${error.message}`)
-    }
-}
