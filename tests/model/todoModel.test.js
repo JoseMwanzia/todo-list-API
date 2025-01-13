@@ -53,4 +53,21 @@ describe('Todo Model', () => {
         });
     });
 
+    describe('getCount()', () => {
+        it('should get total count of todos for a user', async () => {
+            const mockConut = pool.query.mockResolvedValueOnce({ rows: [{ count: '5' }] });
+    
+            const userId = 1;
+            const count = await Todo.getCount(userId);
+    
+            expect(pool.query).toHaveBeenCalledWith(
+            'SELECT COUNT(*) AS TOTAL FROM todo_list WHERE user_id=$1;',
+            [userId]
+            );
+            expect(count).toBe(count);
+        });
+    });
+
+
 });
+
