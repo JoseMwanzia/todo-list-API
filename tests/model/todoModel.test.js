@@ -64,7 +64,53 @@ describe('Todo Model', () => {
             'SELECT COUNT(*) AS TOTAL FROM todo_list WHERE user_id=$1;',
             [userId]
             );
-            expect(count).toBe(count);
+    describe('createTodo()', () => {
+        let originalConsoleError;
+
+        beforeAll(() => {
+            // save the original console.error
+            originalConsoleError = console.error;
+
+            // Mock the 'console.error' to surpress it durng tests
+            console.error = jest.fn();
+        })
+
+        afterAll(() => {
+            // Restore the original console.error after all tests
+            console.error = originalConsoleError;
+        })
+
+        it('should create a new todo successfully', async () => {
+
+            const mockResult = { rows: [
+                {
+                    title: 'New Todo',
+                    description: 'My description',
+                    user_id: 1,
+                }
+            ]};
+    
+            pool.query.mockResolvedValueOnce(mockResult);
+
+            const result = await Todo.createTodo(mockResult.rows[0].title, mockResult.rows[0].description, mockResult.rows[0].user_id);
+    
+            expect(pool.query).toHaveBeenCalledWith(
+                'INSERT INTO todo_list (title, description, user_id) VALUES ($1, $2, $3) RETURNING *;',
+                [mockResult.rows[0].title, mockResult.rows[0].description, mockResult.rows[0].user_id]
+            );
+            expect(result).toEqual(mockResult.rows);
+        });
+    
+        it('should handle database errors in createTodo()', async () => {
+              const error = new Error('Database error');
+              pool.query.mockRejectedValueOnce(error);
+        
+              const todoData = {
+                title: 'New Todo',
+                user_id: 1
+              };
+        
+              await expect(Todo.createTodo(todoData)).rejects.toThrow('Database error');
         });
     });
 
