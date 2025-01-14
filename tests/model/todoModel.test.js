@@ -55,7 +55,7 @@ describe('Todo Model', () => {
 
     describe('getCount()', () => {
         it('should get total count of todos for a user', async () => {
-            const mockConut = pool.query.mockResolvedValueOnce({ rows: [{ count: '5' }] });
+            pool.query.mockResolvedValueOnce({ rows: [{ total: 5 }] });
     
             const userId = 1;
             const count = await Todo.getCount(userId);
@@ -64,6 +64,10 @@ describe('Todo Model', () => {
             'SELECT COUNT(*) AS TOTAL FROM todo_list WHERE user_id=$1;',
             [userId]
             );
+            expect(count).toBe(5);
+        });
+    });
+
     describe('createTodo()', () => {
         let originalConsoleError;
 
