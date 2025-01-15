@@ -118,6 +118,56 @@ describe('Todo Model', () => {
         });
     });
 
-
+    describe('updateTodo()', () => {
+        it('should update a todo successfully', async () => {
+            const mockUpdatedTodo = {
+                id: 1,
+                title: 'Updated Todo',
+                description: 'description',
+                user_id: 1
+            };
+    
+            pool.query.mockResolvedValueOnce({ rows: [mockUpdatedTodo] });
+    
+            const todoId = 1;
+    
+            const result = await Todo.updateTodo(mockUpdatedTodo.title, mockUpdatedTodo.description, todoId, mockUpdatedTodo.user_id);
+    
+            expect(pool.query).toHaveBeenCalledWith(
+                'UPDATE todo_list SET title=$1, description=$2 WHERE id=$3 AND user_id=$4 RETURNING *;',
+                [mockUpdatedTodo.title, mockUpdatedTodo.description, todoId, mockUpdatedTodo.user_id]
+            );
+            expect(result).toEqual([mockUpdatedTodo]);
+        });
+    
+        it('should return null when todo not found', async () => {
+            pool.query.mockResolvedValueOnce({ rows: [] });
+            const mockUpdatedTodo = {
+                id: 1,
+                title: 'Updated Todo',
+                description: 'description',
+                user_id: 1
+            };
+            const todoId = null;
+            const result = await Todo.updateTodo(mockUpdatedTodo.title, mockUpdatedTodo.description, todoId, mockUpdatedTodo.user_id);
+    
+            expect(result).toBeNull();
+        });
+    
+        it('should handle database errors in updateTodo()', async () => {
+            const error = new Error('Database error');
+            pool.query.mockRejectedValueOnce(error);
+            const mockUpdatedTodo = {
+                id: 1,
+                title: 'Updated Todo',
+                description: 'description',
+                user_id: 1
+            };
+    
+            const todoId = 1;
+            await expect(Todo.updateTodo(mockUpdatedTodo.title, mockUpdatedTodo.description, todoId, mockUpdatedTodo.user_id))
+            .rejects.toThrow('Database error');
+        });
+    });
 });
 
