@@ -50,6 +50,7 @@ exports.updateTodos = async function name(req, res) {
     try {
         // do a database query for update
         const result = await Todo.updateTodo(title, description, todoId, userId)
+        if (result == null) return res.sendStatus(404);
         res.status(201).send(result)
     } catch (error) {
         console.log(error.message);

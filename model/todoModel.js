@@ -28,6 +28,9 @@ class Todo {
     static async updateTodo( title, description, todoId, userId) {
         try {
             const result = await pool.query('UPDATE todo_list SET title=$1, description=$2 WHERE id=$3 AND user_id=$4 RETURNING *;', [title, description, todoId, userId])
+            if (result.rows.length === 0) {
+                return null; // If no rows are updated, return null
+            }
             return result.rows
         } catch (error) {
             console.log(error);
