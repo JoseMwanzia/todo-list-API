@@ -7,7 +7,7 @@ jest.mock('../../model/todoModel');
 jest.mock('../../logger/logger')
 
 
-describe('fetchData', () => {
+describe('todoController', () => {
   let mockReq, mockRes;
 
   beforeEach(() => {
@@ -27,91 +27,91 @@ describe('fetchData', () => {
 
     jest.clearAllMocks(); // Clear mocks after each test
   });
-  
+
   afterEach(() => {
     jest.restoreAllMocks();
   });
+  describe('fetchData()', () => {
+    it('should return all todos with pagination if no search term is provided', async () => {
+      const mockTodos = [
+        { title: 'Todo 1', description: 'Description 1' },
+        { title: 'Todo 2', description: 'Description 2' },
+      ];
+      const mockTotalCount = 20;
 
-  it('should return all todos with pagination if no search term is provided', async () => {
-    const mockTodos = [
-      { title: 'Todo 1', description: 'Description 1' },
-      { title: 'Todo 2', description: 'Description 2' },
-    ];
-    const mockTotalCount = 20;
+      // Mock database methods
+      Todo.getCount = jest.fn().mockResolvedValue(mockTotalCount);
+      Todo.all = jest.fn().mockResolvedValue(mockTodos);
 
-    // Mock database methods
-    Todo.getCount = jest.fn().mockResolvedValue(mockTotalCount);
-    Todo.all = jest.fn().mockResolvedValue(mockTodos);
+      mockReq.query = { page: '2', limit: '5' }; // Simulate query parameters
 
-    mockReq.query = { page: '2', limit: '5' }; // Simulate query parameters
+      await fetchData(mockReq, mockRes);
 
-    await fetchData(mockReq, mockRes);
-
-    expect(Todo.getCount).toHaveBeenCalledWith('testUserId');
-    expect(Todo.all).toHaveBeenCalledWith('testUserId', 5, 5); // page=2, limit=5 => offset=5
-    expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.send).toHaveBeenCalledWith({
-      data: mockTodos,
-      page: 2,
-      limit: 5,
-      total: mockTotalCount,
+      expect(Todo.getCount).toHaveBeenCalledWith('testUserId');
+      expect(Todo.all).toHaveBeenCalledWith('testUserId', 5, 5); // page=2, limit=5 => offset=5
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.send).toHaveBeenCalledWith({
+        data: mockTodos,
+        page: 2,
+        limit: 5,
+        total: mockTotalCount,
+      });
     });
-  });
 
-  it('should return filtered todos when search term is provided', async () => {
-    const mockTodos = [
-      { title: 'Todo 1', description: 'Search term present' },
-      { title: 'Another Todo', description: 'No match' },
-    ];
-    const mockTotalCount = 10;
+    it('should return filtered todos when search term is provided', async () => {
+      const mockTodos = [
+        { title: 'Todo 1', description: 'Search term present' },
+        { title: 'Another Todo', description: 'No match' },
+      ];
+      const mockTotalCount = 10;
 
-    Todo.getCount = jest.fn().mockResolvedValue(mockTotalCount);
-    Todo.all = jest.fn().mockResolvedValue(mockTodos);
+      Todo.getCount = jest.fn().mockResolvedValue(mockTotalCount);
+      Todo.all = jest.fn().mockResolvedValue(mockTodos);
 
-    mockReq.query = { term: 'Search', page: '1', limit: '10' };
+      mockReq.query = { term: 'Search', page: '1', limit: '10' };
 
-    await fetchData(mockReq, mockRes);
+      await fetchData(mockReq, mockRes);
 
-    expect(mockRes.status).toHaveBeenCalledWith(200);
-    expect(mockRes.send).toHaveBeenCalledWith({
-      filterdTodos: [{ title: 'Todo 1', description: 'Search term present' }],
-      page: 1,
-      limit: 10,
-      total: mockTotalCount,
+      expect(mockRes.status).toHaveBeenCalledWith(200);
+      expect(mockRes.send).toHaveBeenCalledWith({
+        filterdTodos: [{ title: 'Todo 1', description: 'Search term present' }],
+        page: 1,
+        limit: 10,
+        total: mockTotalCount,
+      });
     });
-  });
 
-  it('should return 404 when no todos match the search term', async () => {
-    const mockTodos = [
-      { title: 'Todo 1', description: 'Description 1' },
-      { title: 'Todo 2', description: 'Description 2' },
-    ];
-    const mockTotalCount = 10;
+    it('should return 404 when no todos match the search term', async () => {
+      const mockTodos = [
+        { title: 'Todo 1', description: 'Description 1' },
+        { title: 'Todo 2', description: 'Description 2' },
+      ];
+      const mockTotalCount = 10;
 
-    Todo.getCount = jest.fn().mockResolvedValue(mockTotalCount);
-    Todo.all = jest.fn().mockResolvedValue(mockTodos);
+      Todo.getCount = jest.fn().mockResolvedValue(mockTotalCount);
+      Todo.all = jest.fn().mockResolvedValue(mockTodos);
 
-    mockReq.query = { term: 'nonexistent' };
+      mockReq.query = { term: 'nonexistent' };
 
-    await fetchData(mockReq, mockRes);
+      await fetchData(mockReq, mockRes);
 
-    expect(mockRes.sendStatus).toHaveBeenCalledWith(404);
-  });
+      expect(mockRes.sendStatus).toHaveBeenCalledWith(404);
+    });
 
-  it('should handle errors properly', async () => {
-    // Arrange
-    mockReq.query.page = 1;
-    mockReq.query.limit = 10;
-    const errorMessage = 'Database error';
-    Todo.getCount.mockRejectedValue(new Error(errorMessage));
+    it('should handle errors properly', async () => {
+      // Arrange
+      mockReq.query.page = 1;
+      mockReq.query.limit = 10;
+      const errorMessage = 'Database error';
+      Todo.getCount.mockRejectedValue(new Error(errorMessage));
 
-    // Act
-    await fetchData(mockReq, mockRes);
+      // Act
+      await fetchData(mockReq, mockRes);
 
-    // Assert
-    expect(logger.error).toHaveBeenCalledWith(`Error executing GET request, ${errorMessage}`);
-    expect(mockRes.status).toHaveBeenCalledWith(500);
-    expect(mockRes.send).toHaveBeenCalledWith(`Error executing GET request, ${errorMessage}\n`);
-  });
-
+      // Assert
+      expect(logger.error).toHaveBeenCalledWith(`Error executing GET request, ${errorMessage}`);
+      expect(mockRes.status).toHaveBeenCalledWith(500);
+      expect(mockRes.send).toHaveBeenCalledWith(`Error executing GET request, ${errorMessage}\n`);
+    });
+  })
 });
