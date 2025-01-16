@@ -7,9 +7,9 @@ exports.fetchData = async function (req, res) {
     const page = parseInt(req.query.page, 10) || 1; // Current page (default: 1)
     const limit = parseInt(req.query.limit, 10) || 10; // Items per page (default: 10)
     const offset = (page - 1) * limit;
-    const total = parseInt(await Todo.getCount(userId), 10)
 
     try {
+        const total = parseInt(await Todo.getCount(userId), 10)
         const data = await Todo.all(userId, limit, offset)
 
         if (!term) {
