@@ -1,4 +1,5 @@
 const pool = require('../config/dbConnect')
+const { logger } = require('../logger/logger')
 
 class Todo {
     static async all(userId, limit, offset) {
@@ -20,7 +21,7 @@ class Todo {
             const result = await pool.query('INSERT INTO todo_list (title, description, user_id) VALUES ($1, $2, $3) RETURNING *;', [title, description, userId]);
             return result.rows;
         } catch (error) {
-            console.error(`Error inserting data; ${error.message}`);
+            logger.error(`Error inserting data; ${error.message}`);
             throw new Error(error.message)
         }
     }
@@ -33,7 +34,7 @@ class Todo {
             }
             return result.rows
         } catch (error) {
-            console.log(error);
+            logger.error(error);
             throw new Error(`Error Updating database, ${error.message}`)
         }
     }

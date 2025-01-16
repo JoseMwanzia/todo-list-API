@@ -1,4 +1,5 @@
 const Todo = require('../model/todoModel')
+const {logger} = require('../logger/logger')
 
 exports.fetchData = async function (req, res) {
     const term = req.query.term
@@ -25,7 +26,7 @@ exports.fetchData = async function (req, res) {
         }
 
     } catch (error) {
-        console.error(`Error executing GET request, ${error.message}`);
+        logger.error(`Error executing GET request, ${error.message}`);
         res.status(500).send(`Error executing GET request, ${error.message}\n`)
     }
 }
@@ -37,7 +38,7 @@ exports.createTodos = async (req, res) => {
         const result = await Todo.createTodo(title, description, userId)
         res.status(200).send(result)
     } catch (error) {
-        console.error(`Error posting data, ${error.message}`);
+       logger.error(`Error posting data, ${error.message}`);
         res.status(500).send(`Error posting data, ${error.message}`)
     }
 }
@@ -53,7 +54,7 @@ exports.updateTodos = async function name(req, res) {
         if (result == null) return res.sendStatus(404);
         res.status(201).send(result)
     } catch (error) {
-        console.log(error.message);
+       logger.error(error.message);
         res.status(500).send(`Error updating todo; ${error.message}`)
     }
 }
