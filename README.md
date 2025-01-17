@@ -88,9 +88,15 @@ See [betterstack ](https://betterstack.com/telemetry) for more details.
 - **Winston**: Logging.
 
 ## API Endpoints
-### Authentication
-- `POST /login`: User login.
-- `POST /refresh`: Refresh JWT token.
+- `POST /login`: User login. 
+`` 
+NOTE: Once you login take the access token returned and send it in your 'GET /todos' request method headers this formatt (the token expire after 7 minutes as set in the .env file) ``
+
+``
+headers: {
+'Content-Type': 'application/json','authorization': `Bearer ${token} },
+``
+- `POST /refresh`: Refresh JWT token. This is used to automatically refresh the accessTokens once they expire.
 
 ### To-Do Management
 - `GET /todos`: Fetch all to-dos.
