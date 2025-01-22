@@ -14,10 +14,10 @@ const limiter = rateLimit({
 })
 
 const speedLimiter = slowDown({
-    windowMs: 1 * 60 * 1000, // 15 sec
-    delayAfter: 3, // Allow 30 requests before slowing down
+    windowMs: 1 * 60 * 1000, 
+    delayAfter: 3, // Allow 3 requests before slowing down
     delayAfter: 3000, // Add 3000ms delay per request over the limit
-  });
+});
 
 const corsOptions = {
     origin: 'http://localhost:4000'
