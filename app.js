@@ -1,5 +1,6 @@
 const express = require('express')
 const router = require('./routes/routes')
+const cors = require('cors')
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT
@@ -17,6 +18,11 @@ const speedLimiter = slowDown({
     delayAfter: 3, // Allow 30 requests before slowing down
     delayAfter: 3000, // Add 3000ms delay per request over the limit
   });
+
+const corsOptions = {
+    origin: 'http://localhost:4000'
+  }
+app.use(cors(corsOptions))
 
 app.use(express.json(), limiter, speedLimiter)
 
