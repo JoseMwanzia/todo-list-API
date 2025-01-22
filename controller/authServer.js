@@ -63,7 +63,7 @@ async function logout(req, res) {
         const cachedRefreshToken = await helpers.getCachedRefreshToken(refreshToken);
         if (cachedRefreshToken) {
             const deleteToken = await redis.del(refreshToken);
-            if (deleteToken) return res.sendStatus(204)
+            if (deleteToken) return res.send({ redirect: '/login'})
             return res.status(403).send('Failed to delete cached Token!')
         } else {
             return res.status(404).send('Already Logged out!')

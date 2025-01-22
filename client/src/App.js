@@ -10,7 +10,7 @@ function App() {
 
   const ProtectedRoute = ({ children }) => {
     const token = localStorage.getItem('authToken');
-    return token ? children : <Navigate to="/" />;
+    return token ? children : <Navigate to="/login" />;
   };
 
   return (
@@ -34,20 +34,16 @@ function App() {
             </div>
           </div>
         </nav>
-        <div className="auth-wrapper">
-          <div className="auth-inner">
-            <Routes>
-              <Route exact path="/" element={<Login />} />
-              <Route path="/sign-in" element={<Login />} />
-              <Route path="/sign-up" element={<SignUp />} />
-              <Route path="/todos" element={
-                <ProtectedRoute>
-                  <TodoList/>
-                </ProtectedRoute>
-              }/>
-            </Routes>
-          </div>
-        </div>
+          <Routes>
+            <Route exact path="/login" element={<Login />} />
+            <Route path="/sign-in" element={<Login />} />
+            <Route path="/sign-up" element={<SignUp />} />
+            <Route path="/" element={
+              <ProtectedRoute>
+                <TodoList/>
+              </ProtectedRoute>
+            }/>
+          </Routes>
       </div>
     </Router>
   )
