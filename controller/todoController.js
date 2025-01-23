@@ -4,9 +4,9 @@ const {logger} = require('../logger/logger')
 exports.fetchData = async function (req, res) {
     const term = req.query.term
     const userId =req.user.id;
-    const page = parseInt(req.query.page, 10) || 1; // Current page (default: 1)
-    const limit = parseInt(req.query.limit, 10) || 10; // Items per page (default: 10)
-    const offset = (page - 1) * limit;
+    let page = parseInt(req.query.page, 10) || 1; // Current page (default: 1)
+    let limit = parseInt(req.query.limit, 10) || 10; // Items per page (default: 10)
+    let offset = (page - 1) * limit;
 
     try {
         const total = parseInt(await Todo.getCount(userId), 10)
@@ -15,7 +15,8 @@ exports.fetchData = async function (req, res) {
         if (!term) {
             res.status(200).send({data, page, limit, total}) // if no search term is provided return all the posts
         } else {
-            const filterdTodos = data.filter((todo) => {
+            const allData = await Todo.all(userId, limit=null, offset=null)
+            const filterdTodos = allData.filter((todo) => {
                 return todo.title.toLowerCase().includes(term.toLowerCase()) ||
                 todo.description.toLowerCase().includes(term.toLowerCase())
             })
