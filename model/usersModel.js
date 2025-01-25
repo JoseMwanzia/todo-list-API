@@ -8,7 +8,7 @@ class User {
             const result = await pool.query(query, values)
             return result.rows[0]
         } catch (error) {
-            throw new Error(error.message)
+            throw new Error(error)
         }
     }
 
