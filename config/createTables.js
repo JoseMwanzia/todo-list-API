@@ -18,7 +18,7 @@ async function createUsersTable() {
         await pool.query(query)
         console.log('Users table Created ✅ ✅ ✅');
     } catch (error) {
-        console.error("Error creating users table " + error.message)
+        console.error("Error creating users table: " + error)
     }
 }
 
@@ -51,6 +51,6 @@ async function createTodosTable() {
         await pool.query(query)
         console.log('Todo_list table created ✅ ✅ ✅');
     } catch (error) {
-        console.error('Error creating todo_list table ' + error.message)
+        console.error('Error creating todo_list table: ' + error)
     }
 }
