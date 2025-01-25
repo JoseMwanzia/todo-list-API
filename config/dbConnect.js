@@ -7,9 +7,9 @@ const pool = new Pool({
     user: DB_USER,
     password: DB_PASSWORD,
     database: DB_DATABASE,
-    max: 20,
-    idleTimeoutMillis: 3000,
-    connectionTimeoutMillis: 20000
+    // max: 20,
+    // idleTimeoutMillis: 3000,
+    // connectionTimeoutMillis: 20000
 })
 
 module.exports = pool
