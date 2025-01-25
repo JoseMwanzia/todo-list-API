@@ -1,4 +1,4 @@
-# Project Name: [Insert Project Name]
+# Project Name: Todo-list
 
 ## Description
 This project is a modular application designed to efficiently manage authentication, to-do tasks, and user-related operations. It leverages tools like Redis for managing JWT refresh tokens and Winston for logging, ensuring high performance and scalability. The API endpoint is designed to be used by a frontend application to interact with the todo list data. [_](https://roadmap.sh/projects/todo-list-api)
