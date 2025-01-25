@@ -20,7 +20,7 @@ const speedLimiter = slowDown({
 });
 
 const corsOptions = {
-    origin: 'http://localhost:4000'
+    origin: 'http://localhost:4000/*'
   }
 app.use(cors(corsOptions))
 
