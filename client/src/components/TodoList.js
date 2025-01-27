@@ -10,9 +10,7 @@ function TodoList() {
     const localTokens = JSON.parse(localStorage.getItem('authToken'));
     const [tokens, setTokens] = useState({ token: localTokens.token, refreshToken: localTokens.refreshToken });
     const [data, setData] = useState([])
-    const navigate = useNavigate()
-    
-    async function fetchTodo() {
+    const [page, setPage] = useState(1)
         try {
             let res = await fetch(`https://todo-list-api-f7q3.onrender.com/todos?page=${page}`, {
                 method: 'GET',
@@ -22,41 +20,37 @@ function TodoList() {
                 },
             });
 
-            if (res.status === 401) {
-                console.warn("Access token expired. Attempting to refresh page...");
-
-                // Refresh token logic
-                let newRes = await fetch('http://localhost:3000/refresh', {
-                    method: 'POST',
-                    headers: {
-                        'content-type': 'application/json',
-                    },
-                    body: JSON.stringify({ token: tokens.refreshToken }),
-                });
-
-                if (newRes.ok) {
-                    const refreshedToken = await newRes.clone().text();
-                    setTokens((prevData) => ({...prevData, token: refreshedToken})); // Update tokens
-
-                    // Retry fetching todos with the new access token
-                    res = await fetch('http://localhost:3000/todos', {
-                        method: 'GET',
-                        headers: {
-                            'content-type': 'application/json',
-                            'authorization': `Bearer ${tokens.token}`,
-                        },
-                    });
-                } else {
-                    console.error("Failed to refresh tokens. Please log in again.");
-                    return;
-                }
-            }
-
             if (res.ok) {
                 const data = await res.json();
-                setData(data.data); // Update state with fetched data
+                return setData(data.data), setTotal(data.total) // Update state with fetched data
+            } 
+
+            console.warn("Access token expired. Attempting to refresh page...");
+
+            // Refresh token logic
+            let newRes = await fetch('http://localhost:3000/refresh', {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ token: tokens.refreshToken }),
+            });
+
+            if (newRes.ok) {
+                const refreshedToken = await newRes.clone().text();
+                setTokens((prevData) => ({...prevData, token: refreshedToken})); // Update tokens
+
+                // Retry fetching todos with the new access token
+                res = await fetch('http://localhost:3000/todos', {
+                    method: 'GET',
+                    headers: {
+                        'content-type': 'application/json',
+                        'authorization': `Bearer ${tokens.token}`,
+                    },
+                });
             } else {
-                console.error("Failed to fetch todos:", res.status);
+                console.error("Failed to refresh tokens. Please log in again.");
+                return;
             }
         } catch (error) {
             console.error("Error fetching todos:", error);
@@ -64,7 +58,7 @@ function TodoList() {
     }
 
     useEffect(() => {   
-        fetchTodo()
+        fetchTodo(page)
     }, [tokens.token])
 
     async function handleLogout() {
