@@ -10,6 +10,7 @@ function TodoList() {
     const localTokens = JSON.parse(localStorage.getItem('authToken'));
     const [tokens, setTokens] = useState({ token: localTokens.token, refreshToken: localTokens.refreshToken });
     const [data, setData] = useState([])
+    const [search, setSearch] = useState('')
     const [page, setPage] = useState(1)
         try {
             let res = await fetch(`https://todo-list-api-f7q3.onrender.com/todos?page=${page}`, {
@@ -61,49 +62,77 @@ function TodoList() {
         fetchTodo(page)
     }, [tokens.token])
 
-    async function handleLogout() {
-        try {
-            const response = await fetch('http://localhost:3000/logout', {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    'authorization': `bearer ${tokens.token}`
-                },
-                body: JSON.stringify({token: tokens.token, refreshToken: tokens.refreshToken})
-            })
-            if (response.ok) {
-                const data = await response.json()
-                navigate(data.redirect)
-                localStorage.removeItem('authToken')
-            }
-        } catch (error) {
-            console.error('Error Loogig out', error)
+    async function handleSearch(event) {
+        event.preventDefault();
+        if (!search) return await fetchTodo(page)
+        const res = await fetch(`http://localhost:3000/todos?term=${search}`, {
+            method: 'GET',
+            headers: {
+                'content-type': 'application/json',
+                'authorization': `Bearer ${tokens.token}`,
+            },
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            setData(data.filterdTodos); // Update state with fetched data
+        } else {
+            console.error("Failed to fetch todos:", res.status);
         }
     }
 
   return (
     <>
-        <Row xs={1} md={2} className="g-4 mt-5  ">
-            {data.length >0 ? data.map((res) => (
-                <Col key={res.id}>
-                <Card>
-                    {/* <Card.Img variant="top" src="holder.js/100px160" /> */}
-                    <Card.Body>
-                        <Card.Title>{res.title}</Card.Title>
-                        <Card.Text>
-                            {res.description}
-                        </Card.Text>
-                        <Update title={res.title} description={res.description} todoId={res.id} token={tokens.token}/>
-                    </Card.Body>
-                </Card>
-                </Col>
-            )) : 
-            <h1>Loading...</h1>
-            }
-        </Row>
-        <Col className='g-4 my-3 d-flex justify-content-center'>
-            <Button className='w-25 btn-danger' onClick={handleLogout}>Logout</Button>
-        </Col>
+        <div>
+            <form onSubmit={handleSearch} className='search w-50 my-3 mx-2'>
+            <div style={{position: 'relative'}}>
+                <input value={search} onChange={(e) => setSearch(e.target.value)}
+                    type="text"
+                    className="form-control"
+                    placeholder="Search"
+                    // style={{width: '100%', paddingLeft: '35px', height: '35px', boxSizing: 'border-box'}}
+                    />
+                    <svg  xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-search" viewBox="0 0 16 16" style={{position: 'absolute', right: '100px', top: '25%', }}>
+                        <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                    </svg>
+                
+                <Button type='submit' style={{position: 'absolute', right: '0px', top: '0%', }}>Search</Button>
+            </div>
+            </form>
+            <AddTodo tokens={tokens.token}/>
+        </div>
+        <div>
+            <Row xs={1} md={2} className="g-4">
+                {data.length >0 ? data.map((res) => (
+                    <Col key={res.id}>
+                    <Card>
+                        {/* <Card.Img variant="top" src="holder.js/100px160" /> */}
+                        <Card.Body>
+                            <Card.Title>{res.title}</Card.Title>
+                            <Card.Text className='custom-text'>
+                                {res.description}
+                            </Card.Text>
+                            <Update title={res.title} description={res.description} todoId={res.id} token={tokens.token}/>
+                        </Card.Body>
+                    </Card>
+                    </Col>
+                )) : 
+                <h1>Loading...</h1>
+                }
+            </Row>
+            <div>
+                <button onClick={handlePreviousPage} disabled={page === 1}>
+                    Previous
+                </button>
+                <span>
+                    Page {page} of {totalPages}
+                </span>
+                <button onClick={handleNextPage} disabled={page === totalPages}>
+                    Next
+                </button>
+            </div>
+        </div>
+        <Logout tokens={tokens}/>
     </>
   )
 }
