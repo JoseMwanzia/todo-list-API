@@ -15,7 +15,7 @@ export default function SignUp() {
         password
       }
 
-      const response = await fetch('http://localhost:3000/signup', {
+      const response = await fetch('https://todo-list-api-f7q3.onrender.com/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
