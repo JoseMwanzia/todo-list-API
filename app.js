@@ -39,3 +39,14 @@ app.get('*', (req, res) => {
 app.listen(port, () => {
     console.log(`App serving @ http://localhost:${port}`)
 })
+
+
+    // How It Works When Deployed
+// 1. When a user visits your site, e.g., https://example.com:
+    // . The server sends index.html to the browser.
+    // . The browser loads React, which then fetches additional resources (JavaScript, CSS, etc.) from the client/build folder.
+// 2. If the user visits a route like https://example.com/about:
+    // . Express serves index.html again.
+    // . React Router reads the route /about and displays the "About" page.
+// 3. If the user requests an API endpoint like https://example.com/api/data:
+    // . The server handles it because you’ve defined an API route (app.get('/api/data', ...)).
