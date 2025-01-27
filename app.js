@@ -27,6 +27,13 @@ app.use(cors({ origin: true }))
 app.use(express.json(), limiter, speedLimiter)
 
 app.use('/', router)
+// Serve static files from the client build directory
+app.use(express.static(path.join(__dirname, 'client/build')))
+
+// Catch-all route to serve the frontend
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+});
 
 app.listen(port, () => {
     console.log(`App serving @ http://localhost:${port}`)
