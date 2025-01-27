@@ -14,7 +14,7 @@ function TodoList() {
     
     async function fetchTodo() {
         try {
-            let res = await fetch('http://localhost:3000/todos', {
+            let res = await fetch(`https://todo-list-api-f7q3.onrender.com/todos?page=${page}`, {
                 method: 'GET',
                 headers: {
                     'content-type': 'application/json',

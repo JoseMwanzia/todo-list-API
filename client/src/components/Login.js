@@ -12,7 +12,7 @@ export default function Login() {
     const loginData = {email, password}
 
     try {
-      const response = await fetch('http://localhost:3000/login', {
+      const response = await fetch('https://todo-list-api-f7q3.onrender.com/login', {
         method: 'POST',
         headers: {
           'content-type': 'application/json'
