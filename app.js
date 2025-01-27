@@ -1,7 +1,6 @@
 const express = require('express')
 const router = require('./routes/routes')
 const path = require('path');
-const cors = require('cors')
 require('dotenv').config()
 const app = express()
 const port = process.env.PORT
@@ -20,10 +19,6 @@ const speedLimiter = slowDown({
     delayAfter: 3000, // Add 3000ms delay per request over the limit
 });
 
-const corsOptions = {
-    origin: 'http://localhost:4000/*'
-  }
-app.use(cors({ origin: true }))
 
 app.use(express.json(), limiter, speedLimiter)
 
@@ -31,7 +26,8 @@ app.use('/', router)
 // Serve static files from the client build directory
 app.use(express.static(path.join(__dirname, 'client/build')))
 
-// Catch-all route to serve the frontend
+// Catch-all route to serve the frontend. You're telling Express to serve index.html for any route not matching an API endpoint. 
+// . Then React takes over, reads the route, and renders the correct page.
 app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
