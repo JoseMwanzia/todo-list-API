@@ -22,8 +22,8 @@ export default function Login() {
   
       if (response.ok) {
         const data = await response.json();
-        localStorage.setItem('authToken', data);
-        navigate('/todos', { state: {data} })
+        localStorage.setItem('authToken', JSON.stringify(data));
+        navigate('/')
       } else {
         const data = await response.json()
         console.log(data.message);
