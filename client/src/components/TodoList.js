@@ -11,7 +11,27 @@ function TodoList() {
     const [tokens, setTokens] = useState({ token: localTokens.token, refreshToken: localTokens.refreshToken });
     const [data, setData] = useState([])
     const [search, setSearch] = useState('')
+    const [total, setTotal] = useState(0)
     const [page, setPage] = useState(1)
+    const limit = 10
+    const totalPages = Math.ceil(total / limit)
+
+
+  const handleNextPage = async () => {
+    if (page < totalPages) {
+        setPage(page + 1) 
+        await fetchTodo(page + 1)
+    }
+  };
+
+  const handlePreviousPage = async () => {
+    if (page > 1) {
+        setPage(page - 1)
+        await fetchTodo(page - 1)
+    }
+  };
+
+    async function fetchTodo(page) {
         try {
             let res = await fetch(`https://todo-list-api-f7q3.onrender.com/todos?page=${page}`, {
                 method: 'GET',
