@@ -15,7 +15,7 @@ exports.signUpUser = async function(req, res) {
         const sentData = await User.register(userData); 
         return res.status(201).send(sentData);
     } catch (error) {
-        res.status(400).send(error.message)
+        res.status(400).send(error)
         console.error("Error posting data: " + error);
     }
 }
