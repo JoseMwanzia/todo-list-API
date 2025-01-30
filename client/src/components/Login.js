@@ -9,7 +9,7 @@ export default function Login() {
 
   async function login(event) {
     event.preventDefault();
-    const loginData = {email, password}
+    const loginData = { email, password }
 
     try {
       const response = await fetch('https://todo-list-api-f7q3.onrender.com/login', {
@@ -26,8 +26,7 @@ export default function Login() {
         navigate('/')
       } else {
         const data = await response.json()
-        console.log(data.message);
-        setErrorMessage(data.message)
+        setErrorMessage(data.error)
       }
     } catch (error) {
       console.log(error.message);
