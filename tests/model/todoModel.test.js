@@ -23,6 +23,11 @@ describe('Todo Model', () => {
         Todo.pool = pool;
     });
 
+    afterAll(() => {
+        // clear all mock after running tests
+        jest.clearAllMocks();
+    });
+
     describe('all()', () => {
         it('should fetch todos with pagination successfully', async () => {
             const mockTodos = [
